@@ -2,11 +2,11 @@ from flask import Flask, render_template
 from db import DatabaseManager
 
 app = Flask(__name__)  # Створюємо веб–додаток Flask
-db = DatabaseManager("blog.db")
+db = DatabaseManager("data.db")
 
 @app.route("/")  # Вказуємо url-адресу для виклику функції
 def index():
-    articles = db.get_all_articles
+    articles = db.get_all_articles()
     
     return render_template("index.html", articles=articles)  # html-сторінка, що повертається у браузер
 
