@@ -2,24 +2,42 @@ import sqlite3
 
 class DatabaseManager:
     def __init__(self, dbname):
+        self.conn = None
+        self.cursor = None
         self.dbname = dbname
 
-    def get_all_articles(self):
-        try:
-            with sqlite3.connect(self.dbname) as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT * FROM articles")
-                return cursor.fetchall()
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            return []
+    def open(self):
+        self.conn = sqlite3.connect(self.dbname)
+        self.cursor = self.conn.cursor()
+    
+    def close(self):
+        self.cursor.close()
+        self.conn.close()
 
+    def get_all_articles(self):
+        self.open()
+        self.cursor.execute("""SELECT * FROM articles""")
+        data = self.cursor.fetchall()
+        self.close()
+        return data
+    
     def get_article(self, article_id):
-        try:
-            with sqlite3.connect(self.dbname) as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT * FROM articles WHERE id=?", (article_id,))
-                return cursor.fetchone()
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            return None
+        self.open()
+        self.cursor.execute("""SELECT * FROM articles WHERE id=?""", [article_id])
+        data = self.cursor.fetchone()
+        self.close()
+        return data
+
+    def get_all_categories(self):
+        self.open()
+        self.cursor.execute("""SELECT * FROM categories """)
+        data = self.cursor.fetchall()
+        self.close()
+        return data
+    
+    def get_category_articles(self, category_id):
+        self.open()
+        self.cursor.execute("""SELECT * FROM articles WHERE category_id=? """,[category_id])
+        data = self.cursor.fetchall()
+        self.close()
+        return data
